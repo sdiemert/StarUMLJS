@@ -5,11 +5,28 @@ define(function (require, exports, module) {
 
     var NotImplementedError = require("Errors/NotImplementedError").NotImplementedError;
 
-    function CodeGenerator() {
+    function CodeGenerator(tabSize) {
 
-        //empty structure
+        this.tabSize = tabSize || 4;
 
     }
+
+    CodeGenerator.prototype.getTab = function(){
+
+        var s = "";
+        for(var i = 0; i < this.tabSize; i++){
+
+            s += " ";
+
+        }
+        return s;
+    };
+
+    CodeGenerator.prototype.getClassDefinition = function(elem){
+
+        throw new NotImplementedError("getClassDefinition(Object)");
+
+    };
 
     CodeGenerator.prototype.getHeader = function (elem) {
 
@@ -18,7 +35,7 @@ define(function (require, exports, module) {
         s += "/**\n";
         s += "*\n";
         s += "* Class: " + elem.name+"\n";
-        s += "*/\n";
+        s += "*/\n\n";
 
         return s;
 
@@ -26,13 +43,63 @@ define(function (require, exports, module) {
 
     CodeGenerator.prototype.getOperation = function (elem, op) {
 
-        throw new NotImplementedError("getOperation(Object)");
+        throw new NotImplementedError("getOperation(Object, Object)");
 
     };
 
     CodeGenerator.prototype.getAttribute = function (elem, attr) {
 
-        throw new NotImplementedError("getAttribute(Object)");
+        throw new NotImplementedError("getAttribute(Object, Object)");
+
+    };
+
+    CodeGenerator.prototype.getExports = function (elem) {
+
+        return "\n\nmodule.exports = {"+elem.name+":"+elem.name+"};";
+
+    };
+
+    CodeGenerator.prototype.getOperations = function(elem){
+
+        if( !elem || !elem.operations || elem.operations.length ){
+
+            return "";
+
+        }
+
+        var s = "";
+
+        for(var i in elem.operations.length){
+
+            s += this.getOperation(elem, elem.operations[i]);
+
+        }
+
+        return s;
+
+    };
+
+    CodeGenerator.prototype.getOperationParams = function(op){
+
+        if(!op || !op.parameters || !op.parameters.length){
+            return "";
+        }
+
+        var s = "";
+
+        for(var i = 0; i < op.parameters.length; i++){
+
+            s += op.parameters.name;
+
+        }
+
+        return s;
+
+    };
+
+    CodeGenerator.prototype.generate = function (elem) {
+
+        throw new NotImplementedError("generate(Object)");
 
     };
 

@@ -13,7 +13,45 @@ define(function (require, exports, module) {
 
     PrototypeCodeGenerator.prototype.getOperation = function (elem, op) {
 
-        var s = elem.name + ".prototype." + op + " = function(){\n\n}";
+        //function name
+        var s = elem.name + ".prototype." + op + " = function(";
+
+        s += this.getOperationParams(op);
+
+        //end function
+        s += "){\n"+this.getTab()+" /*function implementation*/ \n\n}";
+
+        return s;
+    };
+
+    PrototypeCodeGenerator.prototype.getClassDefinition = function (elem) {
+
+        var s = "";
+
+        s += "function " + elem.name + "(){\n";
+        s += this.getTab();
+        s += "//Constructor\n}\n";
+
+        return s;
+    };
+
+    PrototypeCodeGenerator.prototype.generate = function (elem) {
+
+        var s = "";
+
+        //file header
+        s += this.getHeader(elem);
+
+        //dependencies
+
+        //object definition, includes attributes
+        s += this.getClassDefinition(elem);
+
+        //functions
+        s += this.getOperations(elem);
+
+        // exports at end of file.
+        s += this.getExports(elem);
 
         return s;
     };

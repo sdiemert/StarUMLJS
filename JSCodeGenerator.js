@@ -114,15 +114,12 @@ define(function (require, exports, module) {
 
     JSCodeGenerator.prototype.generateClassCode = function(elem, opts){
 
-        var cGen = new PrototypeCodeGenerator();
+        //filter on ops up here.
+        var cGen = null;
 
-        console.log(cGen);
+        cGen = new PrototypeCodeGenerator();
+        return cGen.generate(elem);
 
-        var s = "";
-
-        s += cGen.getHeader(elem);
-
-        return s;
     };
 
     exports.generate = function (baseModel, basePath, opts) {
