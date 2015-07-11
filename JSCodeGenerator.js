@@ -10,6 +10,8 @@ define(function (require, exports, module) {
     var fsUtils = app.getModule("file/FileUtils");
     var async   = app.getModule("utils/Async");
 
+    var PrototypeCodeGenerator = require("CodeGenerators/PrototypeCodeGenerator").PrototypeCodeGenerator;
+
     /**
      *
      * @param {type.UMLPackage} baseModel
@@ -112,13 +114,16 @@ define(function (require, exports, module) {
 
     JSCodeGenerator.prototype.generateClassCode = function(elem, opts){
 
+        var cGen = new PrototypeCodeGenerator();
+
+        console.log(cGen);
+
         var s = "";
 
-
+        s += cGen.getHeader(elem);
 
         return s;
     };
-
 
     exports.generate = function (baseModel, basePath, opts) {
 
