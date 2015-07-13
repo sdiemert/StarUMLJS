@@ -47,7 +47,7 @@ define(function (require, exports, module) {
 
     };
 
-    CodeGenerator.prototype.getAttribute = function (elem, attr) {
+    CodeGenerator.prototype.getAttributeDefinitions = function (elem) {
 
         throw new NotImplementedError("getAttribute(Object, Object)");
 
@@ -61,7 +61,7 @@ define(function (require, exports, module) {
 
     CodeGenerator.prototype.getOperations = function(elem){
 
-        if( !elem || !elem.operations || elem.operations.length ){
+        if( !elem || !elem.operations || !elem.operations.length ){
 
             return "";
 
@@ -69,7 +69,7 @@ define(function (require, exports, module) {
 
         var s = "";
 
-        for(var i in elem.operations.length){
+        for(var i = 0; i < elem.operations.length; i++){
 
             s += this.getOperation(elem, elem.operations[i]);
 
@@ -89,11 +89,24 @@ define(function (require, exports, module) {
 
         for(var i = 0; i < op.parameters.length; i++){
 
-            s += op.parameters.name;
+            if(i !== op.parameters.length - 1){
+
+                s += op.parameters[i].name+", ";
+
+            }else{
+
+                s += op.parameters[i].name;
+            }
 
         }
 
         return s;
+
+    };
+
+    CodeGenerator.prototype.getInheritence = function(elem){
+
+        throw new NotImplementedError("getInheritence(Object)");
 
     };
 

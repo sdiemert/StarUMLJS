@@ -65,7 +65,7 @@ define(function (require, exports, module) {
             directory = fs.getDirectoryForPath(fullPath);
             directory.create(function (err, stat) {
                 if (!err) {
-                    Async.doSequentially(
+                    async.doSequentially(
                         elem.ownedElements,
                         function (child) {
                             return self.generate(child, fullPath, opts);

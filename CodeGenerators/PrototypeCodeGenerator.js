@@ -14,12 +14,12 @@ define(function (require, exports, module) {
     PrototypeCodeGenerator.prototype.getOperation = function (elem, op) {
 
         //function name
-        var s = elem.name + ".prototype." + op + " = function(";
+        var s = elem.name + ".prototype." + op.name + " = function(";
 
         s += this.getOperationParams(op);
 
         //end function
-        s += "){\n"+this.getTab()+" /*function implementation*/ \n\n}";
+        s += "){\n" + this.getTab() + " /*function implementation*/ \n\n};\n\n";
 
         return s;
     };
@@ -30,9 +30,32 @@ define(function (require, exports, module) {
 
         s += "function " + elem.name + "(){\n";
         s += this.getTab();
-        s += "//Constructor\n}\n";
+        s += "//Constructor\n\n";
+
+        s += this.getAttributeDefinitions(elem);
+
+        s += "\n}\n\n";
 
         return s;
+    };
+
+    PrototypeCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
+
+        var s = "";
+
+        if (!elem || !elem.attributes || !elem.attributes.length) {
+
+            return s;
+        }
+
+        for (var i = 0; i < elem.attributes.length; i++){
+
+            s += this.getTab() + "this."+elem.attribtes[i]+ " = null;\n";
+
+        }
+
+        return s;
+
     };
 
     PrototypeCodeGenerator.prototype.generate = function (elem) {
