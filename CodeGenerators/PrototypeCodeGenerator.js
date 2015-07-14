@@ -48,9 +48,36 @@ define(function (require, exports, module) {
             return s;
         }
 
-        for (var i = 0; i < elem.attributes.length; i++){
+        for (var i = 0; i < elem.attributes.length; i++) {
 
-            s += this.getTab() + "this."+elem.attribtes[i]+ " = null;\n";
+            s += this.getTab() + "this." + elem.attributes[i].name + " = null;\n";
+
+        }
+
+        return s;
+
+    };
+
+    PrototypeCodeGenerator.prototype.getInheritance = function (elem) {
+
+        if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
+
+            return "";
+        }
+
+        var s = "";
+
+        for (var i = 0; i < elem.ownedElements.length; i++) {
+
+            if (elem.ownedElements[i] instanceof type.UMLGeneralization) {
+
+                if (elem.ownedElements[i].target instanceof type.UMLClass) {
+
+                    s += elem.name + ".prototype = " + elem.ownedElements[i].target.name+";";
+
+                }
+
+            }
 
         }
 
@@ -70,11 +97,17 @@ define(function (require, exports, module) {
         //object definition, includes attributes
         s += this.getClassDefinition(elem);
 
+        //get inheritance if it exists.
+        s += this.getInheritance(elem);
+
         //functions
         s += this.getOperations(elem);
 
         // exports at end of file.
         s += this.getExports(elem);
+
+        console.log("completed generate()");
+        console.log(s);
 
         return s;
     };

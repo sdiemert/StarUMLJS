@@ -41,6 +41,12 @@ define(function (require, exports, module) {
 
     };
 
+    CodeGenerator.prototype.getInheritance = function(elem){
+
+        throw new NotImplementedError("getInheritance(Object)");
+
+    };
+
     CodeGenerator.prototype.getOperation = function (elem, op) {
 
         throw new NotImplementedError("getOperation(Object, Object)");
