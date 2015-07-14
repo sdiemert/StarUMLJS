@@ -3,6 +3,7 @@
  */
 
 define(function (require, exports, module) {
+
     var CodeGenerator = require("CodeGenerators/CodeGenerator").CodeGenerator;
 
     function PrototypeCodeGenerator() {
@@ -11,10 +12,94 @@ define(function (require, exports, module) {
 
     PrototypeCodeGenerator.prototype = new CodeGenerator();
 
+    PrototypeCodeGenerator.prototype.getMethodDocumentation = function (op) {
+
+        var s = "";
+
+        s += "/**\n";
+
+        if (op.documentation && op.documentation !== "") {
+
+            s += "* @documentation: " + op.documentation.replace("\n", "\n*" + this.getTab()) + "\n*\n";
+
+        }
+
+        if (op.specification && op.specification !== "") {
+
+            s += "* @specification: " + op.specification.replace("\n", "\n*" + this.getTab()) + "\n*\n";
+
+        }
+
+        for (var i = 0; i < op.preconditions.length; i++) {
+
+            if (op.preconditions[i] instanceof type.UMLConstraint) {
+
+                s += "* @precondition " + op.preconditions[i].name + " : " + op.preconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
+
+            }
+
+        }
+
+        for (i = 0; i < op.postconditions.length; i++) {
+
+            if (op.postconditions[i] instanceof type.UMLConstraint) {
+
+                s += "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
+
+            }
+
+        }
+
+        for (var p = 0; p < op.parameters.length; p++) {
+
+            s += "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
+
+        }
+
+        s += "* @return {null}\n";
+
+        s += "*/\n";
+
+        return s;
+    };
+
+    PrototypeCodeGenerator.prototype.getDependancies = function (elem) {
+
+        if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
+
+            return "";
+        }
+
+        var s = "";
+
+        for (var i = 0; i < elem.ownedElements.length; i++) {
+
+            if (elem.ownedElements[i] instanceof type.UMLGeneralization) {
+
+                if (
+                    elem.ownedElements[i].target instanceof type.UMLClass
+                ) {
+
+                    s += "var " + elem.ownedElements[i].target.name + " = require('" + elem.ownedElements[i].target.name + "');\n\n";
+
+                }
+
+            }
+
+        }
+
+        return s;
+
+    };
+
     PrototypeCodeGenerator.prototype.getOperation = function (elem, op) {
 
+        var s = "";
+
+        s += this.getMethodDocumentation(op);
+
         //function name
-        var s = elem.name + ".prototype." + op.name + " = function(";
+        s += elem.name + ".prototype." + op.name + " = function(";
 
         s += this.getOperationParams(op);
 
@@ -73,7 +158,7 @@ define(function (require, exports, module) {
 
                 if (elem.ownedElements[i].target instanceof type.UMLClass) {
 
-                    s += elem.name + ".prototype = " + elem.ownedElements[i].target.name+";";
+                    s += elem.name + ".prototype = new " + elem.ownedElements[i].target.name + "();";
 
                 }
 
@@ -93,6 +178,7 @@ define(function (require, exports, module) {
         s += this.getHeader(elem);
 
         //dependencies
+        s += this.getDependancies(elem);
 
         //object definition, includes attributes
         s += this.getClassDefinition(elem);

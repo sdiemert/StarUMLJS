@@ -11,6 +11,18 @@ define(function (require, exports, module) {
 
     }
 
+    CodeGenerator.prototype.getDependancies = function(elem){
+
+        throw new NotImplementedError("getDependancies(Object)");
+
+    };
+
+    CodeGenerator.prototype.getMethodDocumentation = function(elem){
+
+        throw new NotImplementedError("getDocumentation(Object)");
+
+    };
+
     CodeGenerator.prototype.getTab = function(){
 
         var s = "";
@@ -30,11 +42,19 @@ define(function (require, exports, module) {
 
     CodeGenerator.prototype.getHeader = function (elem) {
 
+
+        var now = new Date();
         var s = "";
 
         s += "/**\n";
-        s += "*\n";
+        s += "* Generated On: "+ now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+"\n";
         s += "* Class: " + elem.name+"\n";
+        if(elem.documentation && elem.documentation !== ""){
+
+            s += "* Description: "+elem.documentation.replace("\n", "\n* ")+"\n";
+
+        }
+
         s += "*/\n\n";
 
         return s;
