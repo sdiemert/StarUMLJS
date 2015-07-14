@@ -16,7 +16,7 @@ define(function (require, exports, module) {
 
         var s = "";
 
-        s += "/**\n";
+        s += "\n/**\n";
 
         if (op.documentation && op.documentation !== "") {
 
@@ -74,6 +74,9 @@ define(function (require, exports, module) {
 
         for (var i = 0; i < elem.ownedElements.length; i++) {
 
+            console.log("elem: "+ elem.name);
+            console.log(elem.ownedElements[i]);
+
             if (elem.ownedElements[i] instanceof type.UMLGeneralization) {
 
                 if (
@@ -83,6 +86,18 @@ define(function (require, exports, module) {
                     s += "var " + elem.ownedElements[i].target.name + " = require('" + elem.ownedElements[i].target.name + "');\n\n";
 
                 }
+
+            } else if (elem.ownedElements[i] instanceof type.UMLAssociation &&
+                elem.ownedElements[i].end1 instanceof type.UMLAssociationEnd &&
+                elem.ownedElements[i].end2 instanceof type.UMLAssociationEnd &&
+                elem.ownedElements[i].end2.reference instanceof type.UMLClass &&
+                elem.ownedElements[i].end1.name !== "" &&
+                elem.ownedElements[i].end2.reference.name !== ""
+            ) {
+
+                //a (mostly) valid UML association we can use.
+
+                s += "var " + elem.ownedElements[i].end1.name + " = require('" + elem.ownedElements[i].end2.reference.name+ "');\n\n";
 
             }
 
@@ -104,7 +119,16 @@ define(function (require, exports, module) {
         s += this.getOperationParams(op);
 
         //end function
-        s += "){\n" + this.getTab() + " /*function implementation*/ \n\n};\n\n";
+        if (elem.isAbstract) {
+
+
+            s += "){\n" + this.getTab() + "throw 'AbstractMethodNotImplementedError';\n\n};\n\n";
+
+        } else {
+
+            s += "){\n" + this.getTab() + "//TODO: Implement Me \n\n};\n\n";
+
+        }
 
         return s;
     };
@@ -139,6 +163,26 @@ define(function (require, exports, module) {
 
         }
 
+        for(var i = 0; i < elem.ownedElements.length; i++){
+
+            if (elem.ownedElements[i] instanceof type.UMLAssociation &&
+                elem.ownedElements[i].end1 instanceof type.UMLAssociationEnd &&
+                elem.ownedElements[i].end2 instanceof type.UMLAssociationEnd &&
+                elem.ownedElements[i].end2.reference instanceof type.UMLClass &&
+                elem.ownedElements[i].end1.name !== "" &&
+                elem.ownedElements[i].end2.reference.name !== ""
+            ) {
+
+                //a (mostly) valid UML association we can use.
+
+                //we are assuming that they already have included the required object as a dependancy and named it
+                //correctly.
+                s += this.getTab()+"this." + elem.ownedElements[i].end1.name + " = "+elem.ownedElements[i].end1.name+";\n";
+
+            }
+
+        }
+
         return s;
 
     };
@@ -158,7 +202,7 @@ define(function (require, exports, module) {
 
                 if (elem.ownedElements[i].target instanceof type.UMLClass) {
 
-                    s += elem.name + ".prototype = new " + elem.ownedElements[i].target.name + "();";
+                    s += elem.name + ".prototype = new " + elem.ownedElements[i].target.name + "();\n";
 
                 }
 
