@@ -1,5 +1,8 @@
 /**
  * Created by sdiemert on 15-07-10.
+ *
+ * Generates code in a Functional "class" pattern.
+ * See templates/functional/functional.js as an example.
  */
 
 define(function (require, exports, module) {
@@ -10,23 +13,23 @@ define(function (require, exports, module) {
 
     }
 
-    PrototypeCodeGenerator.prototype = new CodeGenerator();
+    FunctionalCodeGenerator.prototype = new CodeGenerator();
 
-    PrototypeCodeGenerator.prototype.getMethodDocumentation = function (op) {
+    FunctionalCodeGenerator.prototype.getMethodDocumentation = function (op) {
 
         var s = "";
 
-        s += "\n/**\n";
+        s += "\n" + this.getTab() + "/**\n";
 
         if (op.documentation && op.documentation !== "") {
 
-            s += "* @documentation: " + op.documentation.replace("\n", "\n*" + this.getTab()) + "\n*\n";
+            s += this.getTab() + "* @documentation: " + op.documentation.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*\n";
 
         }
 
         if (op.specification && op.specification !== "") {
 
-            s += "* @specification: " + op.specification.replace("\n", "\n*" + this.getTab()) + "\n*\n";
+            s += this.getTab() + "* @specification: " + op.specification.replace("\n", "\n*" + this.getTab()) + "\n*\n";
 
         }
 
@@ -34,7 +37,7 @@ define(function (require, exports, module) {
 
             if (op.preconditions[i] instanceof type.UMLConstraint) {
 
-                s += "* @precondition " + op.preconditions[i].name + " : " + op.preconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
+                s += this.getTab() + "* @precondition " + op.preconditions[i].name + " : " + op.preconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
 
             }
 
@@ -44,7 +47,7 @@ define(function (require, exports, module) {
 
             if (op.postconditions[i] instanceof type.UMLConstraint) {
 
-                s += "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
+                s += this.getTab() + "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
 
             }
 
@@ -52,18 +55,18 @@ define(function (require, exports, module) {
 
         for (var p = 0; p < op.parameters.length; p++) {
 
-            s += "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
+            s += this.getTab() + "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
 
         }
 
-        s += "* @return {null}\n";
+        s += this.getTab() + "* @return {null}\n";
 
-        s += "*/\n";
+        s += this.getTab() + "*/\n";
 
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getDependancies = function (elem) {
+    FunctionalCodeGenerator.prototype.getDependancies = function (elem) {
 
         if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
 
@@ -100,7 +103,7 @@ define(function (require, exports, module) {
                 elem.ownedElements[i] instanceof type.UMLDependency &&
                 elem.ownedElements[i].target instanceof type.UMLClass &&
                 elem.ownedElements[i].target.name
-            ){
+            ) {
 
                 s += "var " + elem.ownedElements[i].target.name + " = require('" + elem.ownedElements[i].target.name + "');\n\n";
 
@@ -112,39 +115,52 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.getOperation = function (elem, op) {
+    FunctionalCodeGenerator.prototype.getOperation = function (elem, op) {
 
         var s = "";
 
         s += this.getMethodDocumentation(op);
 
         //function name
-        s += elem.name + ".prototype." + op.name + " = function(";
+        s += this.getTab() + "var " + op.name + " = function(";
 
         s += this.getOperationParams(op);
 
         //end function
         if (elem.isAbstract) {
 
-
-            s += "){\n" + this.getTab() + "throw 'AbstractMethodNotImplementedError';\n\n};\n\n";
+            s += "){\n" + this.getTab() + this.getTab() + "throw 'AbstractMethodNotImplementedError';\n\n" + this.getTab() + "};\n\n";
 
         } else {
 
-            s += "){\n" + this.getTab() + "//TODO: Implement Me \n\n};\n\n";
+            s += "){\n" + this.getTab() + this.getTab() + "//TODO: Implement Me \n\n" + this.getTab() + "};\n\n";
 
         }
 
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getClassDefinition = function (elem) {
+    FunctionalCodeGenerator.prototype.getClassDefinition = function (elem) {
 
         var s = "";
 
-        s += "function " + elem.name + "(){\n";
-        s += this.getTab();
-        s += "//Constructor\n\n";
+        s += "function " + elem.name + "(proc){\n";
+
+        var inheirt = this.getInheritance(elem);
+
+        //assume that we don't have a generalziation
+        if (inheirt === "") {
+
+            s += this.getTab() + "var that = {};\n";
+
+        } else {
+
+            s += this.getTab() + inheirt + "\n";
+        }
+
+        s += "\n";
+
+        s += this.getTab() + "proc = proc || {};\n\n";
 
         s += this.getAttributeDefinitions(elem);
 
@@ -153,7 +169,7 @@ define(function (require, exports, module) {
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
+    FunctionalCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
 
         var s = "";
 
@@ -164,7 +180,20 @@ define(function (require, exports, module) {
 
         for (var i = 0; i < elem.attributes.length; i++) {
 
-            s += this.getTab() + "this." + elem.attributes[i].name + " = null;\n";
+            if (elem.attributes[i].visibility === "public") {
+
+                s += this.getTab() + "that." + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+
+            } else if (elem.attributes[i].visibility === "protected") {
+
+                s += this.getTab() + "proc." + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+
+            } else {
+
+                s += this.getTab() + "var " + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+
+            }
+
 
         }
 
@@ -182,7 +211,20 @@ define(function (require, exports, module) {
 
                 //we are assuming that they already have included the required object as a dependancy and named it
                 //correctly.
-                s += this.getTab() + "this." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
+                if(elem.ownedElements[i].end1.visibility === "public"){
+
+                    s += this.getTab() + "that." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
+
+                }else if(elem.ownedElements[i].end1.visibility === "protected"){
+
+                    s += this.getTab() + "proc." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
+
+                }else{
+
+                    s += this.getTab() + "var " + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
+
+                }
+
 
             }
 
@@ -192,7 +234,7 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.getInheritance = function (elem) {
+    FunctionalCodeGenerator.prototype.getInheritance = function (elem) {
 
         if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
 
@@ -207,7 +249,7 @@ define(function (require, exports, module) {
 
                 if (elem.ownedElements[i].target instanceof type.UMLClass) {
 
-                    s += elem.name + ".prototype = new " + elem.ownedElements[i].target.name + "();\n";
+                    s += "var that = " + elem.ownedElements[i].target.name + "();\n";
 
                 }
 
@@ -219,7 +261,7 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.generate = function (elem) {
+    FunctionalCodeGenerator.prototype.generate = function (elem) {
 
         var s = "";
 
@@ -232,11 +274,11 @@ define(function (require, exports, module) {
         //object definition, includes attributes
         s += this.getClassDefinition(elem);
 
-        //get inheritance if it exists.
-        s += this.getInheritance(elem);
-
         //functions
         s += this.getOperations(elem);
+
+        //assign public and protected methods.
+        s += this.setOperationVisibility(elem);
 
         // exports at end of file.
         s += this.getExports(elem);
@@ -244,6 +286,6 @@ define(function (require, exports, module) {
         return s;
     };
 
-    exports.PrototypeCodeGenerator = PrototypeCodeGenerator;
+    exports.FunctionalCodeGenerator = FunctionalCodeGenerator;
 });
 
