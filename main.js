@@ -4,8 +4,6 @@
  */
 
 define(function (require, exports, module) {
-    "use strict";
-
     var Commands            = app.getModule('command/Commands');
     var CommandManager      = app.getModule("command/CommandManager");
     var MenuManager         = app.getModule("menu/MenuManager");
@@ -15,15 +13,7 @@ define(function (require, exports, module) {
 
     var JSGen = require("JSCodeGenerator");
 
-    function handleHelloWorld() {
-
-        window.alert("hello world");
-
-    }
-
     function handleGenerate(base, path, opts) {
-
-        console.log("handleGenerate()");
 
         var result = new $.Deferred();
 
@@ -81,9 +71,9 @@ define(function (require, exports, module) {
 
     }
 
-    var CMD = "tools.helloworld";
+    var CMD = "tools.javascript";
 
-    CommandManager.register("Hello World", CMD, handleGenerate);
+    CommandManager.register("Generate JavaScript", CMD, handleGenerate);
 
     var menu = MenuManager.getMenu(Commands.TOOLS);
 
