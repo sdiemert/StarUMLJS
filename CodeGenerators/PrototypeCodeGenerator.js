@@ -74,7 +74,7 @@ define(function (require, exports, module) {
 
         for (var i = 0; i < elem.ownedElements.length; i++) {
 
-            console.log("elem: "+ elem.name);
+            console.log("elem: " + elem.name);
             console.log(elem.ownedElements[i]);
 
             if (elem.ownedElements[i] instanceof type.UMLGeneralization) {
@@ -97,7 +97,15 @@ define(function (require, exports, module) {
 
                 //a (mostly) valid UML association we can use.
 
-                s += "var " + elem.ownedElements[i].end1.name + " = require('" + elem.ownedElements[i].end2.reference.name+ "');\n\n";
+                s += "var " + elem.ownedElements[i].end1.name + " = require('" + elem.ownedElements[i].end2.reference.name + "');\n\n";
+
+            } else if (
+                elem.ownedElements[i] instanceof type.UMLDependency &&
+                elem.ownedElements[i].target instanceof type.UMLClass &&
+                elem.ownedElements[i].target.name
+            ){
+
+                s += "var " + elem.ownedElements[i].target.name + " = require('" + elem.ownedElements[i].target.name + "');\n\n";
 
             }
 
@@ -163,7 +171,7 @@ define(function (require, exports, module) {
 
         }
 
-        for(var i = 0; i < elem.ownedElements.length; i++){
+        for (var i = 0; i < elem.ownedElements.length; i++) {
 
             if (elem.ownedElements[i] instanceof type.UMLAssociation &&
                 elem.ownedElements[i].end1 instanceof type.UMLAssociationEnd &&
@@ -177,7 +185,7 @@ define(function (require, exports, module) {
 
                 //we are assuming that they already have included the required object as a dependancy and named it
                 //correctly.
-                s += this.getTab()+"this." + elem.ownedElements[i].end1.name + " = "+elem.ownedElements[i].end1.name+";\n";
+                s += this.getTab() + "this." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
 
             }
 
