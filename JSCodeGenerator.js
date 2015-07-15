@@ -18,8 +18,7 @@ define(function (require, exports, module) {
      * @param {string} basePath
      * @constructor
      */
-    function
-    JSCodeGenerator(baseModel, basePath) {
+    function JSCodeGenerator(baseModel, basePath) {
 
         this.baseModel = baseModel;
         this.basePath  = basePath;
@@ -37,8 +36,6 @@ define(function (require, exports, module) {
         var file      = "";
 
         if (elem instanceof type.UMLModel) {
-
-            console.log("type is UMLModel");
 
             fullPath = path;
 
@@ -58,7 +55,6 @@ define(function (require, exports, module) {
         else if (elem instanceof  type.UMLPackage) {
 
             fullPath = path + "/" + elem.name;
-            console.log("type is UMLPackage");
 
             //handle creating a new directory.
 
@@ -86,15 +82,12 @@ define(function (require, exports, module) {
 
             } else {
 
-                console.log("type is UMLClass");
-
                 //generate the class.
 
                 fullPath = path + "/" + elem.name + ".js";
 
                 console.log(elem);
 
-                console.log("generating class at: "+ fullPath);
                 file     = fs.getFileForPath(fullPath);
                 fsUtils.writeText(file, self.generateClassCode(elem, opts), true).then(result.resolve, result.reject);
 
@@ -106,13 +99,11 @@ define(function (require, exports, module) {
 
         }
 
-        console.log("Done generation...");
-
         return result.promise();
 
     };
 
-    JSCodeGenerator.prototype.generateClassCode = function(elem, opts){
+    JSCodeGenerator.prototype.generateClassCode = function (elem, opts) {
 
         //filter on ops up here.
         var cGen = null;
