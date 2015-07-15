@@ -6,7 +6,7 @@ define(function (require, exports, module) {
 
     var CodeGenerator = require("CodeGenerators/CodeGenerator").CodeGenerator;
 
-    function FunctionalCodeGenerator() {
+    function PrototypeCodeGenerator() {
 
     }
 
