@@ -261,6 +261,41 @@ define(function (require, exports, module) {
 
     };
 
+    FunctionalCodeGenerator.prototype.setOperationVisibility = function(elem){
+
+        if(!elem || !elem.operations || !elem.operations.length){
+
+            return "";
+
+        }
+
+        var s = "";
+
+        for(var i = 0; i < elem.operations.length; i++){
+
+            if(elem[i].visibility === "public") {
+
+                s += this.getTab()+"that."+elem[i].name +" = "+ elem.name[i]+";\n";
+
+            }else if(elem[i].visibility === "protected"){
+
+                s += this.getTab()+"proc."+elem[i].name +" = "+ elem.name[i]+";\n";
+
+            }else{
+
+                //do nothing, they are already private.
+
+            }
+
+        }
+
+        //add in the return for the public members
+        s += "\n" + this.getTab()+"return that;\n";
+
+        return s;
+
+    };
+
     FunctionalCodeGenerator.prototype.generate = function (elem) {
 
         var s = "";

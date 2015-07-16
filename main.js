@@ -32,7 +32,7 @@ define(function (require, exports, module) {
                                 if (!err) {
                                     if (files.length > 0) {
                                         path = files[0];
-                                        console.log("path: "+ path);
+                                        console.log("path: " + path);
                                         JSGen.generate(base, path, opts).then(result.resolve, result.reject);
                                     } else {
                                         result.reject(FileSystem.USER_CANCELED);
@@ -71,13 +71,17 @@ define(function (require, exports, module) {
 
     }
 
-    var CMD = "tools.javascript";
+    var OUTER_CMD    = "javascript";
+    var CMD_GENERATE = "javascript.generate";
 
-    CommandManager.register("Generate JavaScript", CMD, handleGenerate);
+    CommandManager.register("JavaScript", OUTER_CMD, CommandManager.doNothing);
+    CommandManager.register("Generate", CMD_GENERATE, handleGenerate);
 
-    var menu = MenuManager.getMenu(Commands.TOOLS);
+    var menu, jsMenu;
 
-    menu.addMenuItem(CMD);
+    menu   = MenuManager.getMenu(Commands.TOOLS);
+    jsMenu = menu.addMenuItem(OUTER_CMD);
+    jsMenu.addMenuItem(CMD_GENERATE);
 
 });
 
