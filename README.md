@@ -7,7 +7,7 @@ There are several ways to install an extension into StarUML.
 
 ### StarUML Extension Repository
 
-** Coming Soon**
+StarUMLJS is part of the StarUML offical extension repository. Open the extension manager (Tools -> Extension Manager) and install the JavaScript extension. 
 
 ### Via URL
 Note, installing from GitHub will give whatever is at the HEAD of the master branch. This is not guarenteed to be stable. 
