@@ -11,6 +11,7 @@ define(function (require, exports, module) {
     var async   = app.getModule("utils/Async");
 
     var PrototypeCodeGenerator = require("CodeGenerators/PrototypeCodeGenerator").PrototypeCodeGenerator;
+    var FunctionalCodeGenerator = require("CodeGenerators/FunctionalCodeGenerator").FunctionalCodeGenerator;
 
     /**
      *
@@ -18,10 +19,11 @@ define(function (require, exports, module) {
      * @param {string} basePath
      * @constructor
      */
-    function JSCodeGenerator(baseModel, basePath) {
+    function JSCodeGenerator(baseModel, basePath, opts) {
 
         this.baseModel = baseModel;
         this.basePath  = basePath;
+        this.opts      = opts;
 
     }
 
@@ -88,7 +90,7 @@ define(function (require, exports, module) {
 
                 console.log(elem);
 
-                file     = fs.getFileForPath(fullPath);
+                file = fs.getFileForPath(fullPath);
                 fsUtils.writeText(file, self.generateClassCode(elem, opts), true).then(result.resolve, result.reject);
 
             }
@@ -108,14 +110,25 @@ define(function (require, exports, module) {
         //filter on ops up here.
         var cGen = null;
 
-        cGen = new PrototypeCodeGenerator();
+        if(opts.classType === "functional"){
+
+            cGen = new FunctionalCodeGenerator(opts.indentSpaces);
+
+        }else{
+
+            cGen = new PrototypeCodeGenerator(opts.indentSpaces);
+
+        }
+
+        console.log(cGen);
+
         return cGen.generate(elem);
 
     };
 
     exports.generate = function (baseModel, basePath, opts) {
 
-        var jsgen = new JSCodeGenerator(baseModel, basePath);
+        var jsgen = new JSCodeGenerator(baseModel, basePath, opts);
 
         return jsgen.generate(baseModel, basePath, opts);
 

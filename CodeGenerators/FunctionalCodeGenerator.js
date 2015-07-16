@@ -9,7 +9,9 @@ define(function (require, exports, module) {
 
     var CodeGenerator = require("CodeGenerators/CodeGenerator").CodeGenerator;
 
-    function FunctionalCodeGenerator() {
+    function FunctionalCodeGenerator(spacesPerTab) {
+
+        this.tabSize = spacesPerTab || 4;
 
     }
 
@@ -23,13 +25,13 @@ define(function (require, exports, module) {
 
         if (op.documentation && op.documentation !== "") {
 
-            s += this.getTab() + "* @documentation: " + op.documentation.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*\n";
+            s += this.getTab() + "* @documentation: " + op.documentation.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*"+this.getTab()+"\n";
 
         }
 
         if (op.specification && op.specification !== "") {
 
-            s += this.getTab() + "* @specification: " + op.specification.replace("\n", "\n*" + this.getTab()) + "\n*\n";
+            s += this.getTab() + "* @specification: " + op.specification.replace("\n", "\n"+this.getTab()+"*" + this.getTab()) + "\n"+this.getTab()+"*\n";
 
         }
 
@@ -47,7 +49,7 @@ define(function (require, exports, module) {
 
             if (op.postconditions[i] instanceof type.UMLConstraint) {
 
-                s += this.getTab() + "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n*" + this.getTab()) + "\n";
+                s += this.getTab() + "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n"+this.getTab()+"*" + this.getTab()) + "\n";
 
             }
 
@@ -55,7 +57,7 @@ define(function (require, exports, module) {
 
         for (var p = 0; p < op.parameters.length; p++) {
 
-            s += this.getTab() + "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
+            s += this.getTab() + "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n+"+this.getTab()+"*" + this.getTab()) + "\n";
 
         }
 
@@ -164,7 +166,7 @@ define(function (require, exports, module) {
 
         s += this.getAttributeDefinitions(elem);
 
-        s += "\n}\n\n";
+        s += "\n\n";
 
         return s;
     };
@@ -178,19 +180,24 @@ define(function (require, exports, module) {
             return s;
         }
 
+        var val = null;
+
         for (var i = 0; i < elem.attributes.length; i++) {
+
+            val = elem.attributes[i].defaultValue || "null";
+
 
             if (elem.attributes[i].visibility === "public") {
 
-                s += this.getTab() + "that." + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+                s += this.getTab() + "that." + elem.attributes[i].name + " = " +  val  + ";\n";
 
             } else if (elem.attributes[i].visibility === "protected") {
 
-                s += this.getTab() + "proc." + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+                s += this.getTab() + "proc." + elem.attributes[i].name + " = " + val + ";\n";
 
             } else {
 
-                s += this.getTab() + "var " + elem.attributes[i].name + " = " + elem.attributes[i].defaultValue + ";\n";
+                s += this.getTab() + "var " + elem.attributes[i].name + " = " + val + ";\n";
 
             }
 
@@ -273,13 +280,13 @@ define(function (require, exports, module) {
 
         for(var i = 0; i < elem.operations.length; i++){
 
-            if(elem[i].visibility === "public") {
+            if(elem.operations[i].visibility === "public") {
 
-                s += this.getTab()+"that."+elem[i].name +" = "+ elem.name[i]+";\n";
+                s += this.getTab()+"that."+elem.operations[i].name +" = "+ elem.operations[i].name+";\n";
 
-            }else if(elem[i].visibility === "protected"){
+            }else if(elem.operations[i].visibility === "protected"){
 
-                s += this.getTab()+"proc."+elem[i].name +" = "+ elem.name[i]+";\n";
+                s += this.getTab()+"proc."+elem.operations[i].name +" = "+ elem.operations[i].name+";\n";
 
             }else{
 
@@ -289,12 +296,24 @@ define(function (require, exports, module) {
 
         }
 
-        //add in the return for the public members
-        s += "\n" + this.getTab()+"return that;\n";
+
 
         return s;
 
     };
+
+    FunctionalCodeGenerator.prototype.endClass = function(elem){
+
+        var s = "";
+
+        //add in the return for the public members
+        s += "\n" + this.getTab()+"return that;\n";
+
+        s += "\n}\n\n";
+
+        return s;
+    }
+
 
     FunctionalCodeGenerator.prototype.generate = function (elem) {
 
@@ -315,8 +334,11 @@ define(function (require, exports, module) {
         //assign public and protected methods.
         s += this.setOperationVisibility(elem);
 
+        s += this.endClass(elem);
+
         // exports at end of file.
         s += this.getExports(elem);
+
 
         return s;
     };

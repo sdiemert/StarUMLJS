@@ -6,7 +6,9 @@ define(function (require, exports, module) {
 
     var CodeGenerator = require("CodeGenerators/CodeGenerator").CodeGenerator;
 
-    function PrototypeCodeGenerator() {
+    function PrototypeCodeGenerator(spacesPerTab) {
+
+        this.tabSize = spacesPerTab || 4;
 
     }
 

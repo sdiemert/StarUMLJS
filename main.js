@@ -11,11 +11,16 @@ define(function (require, exports, module) {
     var FileSystem          = app.getModule("filesystem/FileSystem");
     var Dialogs             = app.getModule("dialogs/Dialogs");
 
-    var JSGen = require("JSCodeGenerator");
+    var JSGen           = require("JSCodeGenerator");
+    var JavaScriptConfigure = require("JavaScriptConfigure");
 
     function handleGenerate(base, path, opts) {
 
         var result = new $.Deferred();
+
+        opts = JavaScriptConfigure.getGenOptions();
+
+        console.log(opts);
 
         // If base is not assigned, popup ElementPicker
         if (!base) {
@@ -71,17 +76,26 @@ define(function (require, exports, module) {
 
     }
 
+    function _handleConfigure() {
+        CommandManager.execute(Commands.FILE_PREFERENCES, JavaScriptConfigure.getId());
+    }
+
     var OUTER_CMD    = "javascript";
     var CMD_GENERATE = "javascript.generate";
+    var CMD_CONFIG   = "javascript.configure";
 
     CommandManager.register("JavaScript", OUTER_CMD, CommandManager.doNothing);
-    CommandManager.register("Generate", CMD_GENERATE, handleGenerate);
+    CommandManager.register("Generate...", CMD_GENERATE, handleGenerate);
+    CommandManager.register("Configure...", CMD_CONFIG, _handleConfigure);
 
     var menu, jsMenu;
 
     menu   = MenuManager.getMenu(Commands.TOOLS);
     jsMenu = menu.addMenuItem(OUTER_CMD);
+
     jsMenu.addMenuItem(CMD_GENERATE);
+    jsMenu.addMenuDivider();
+    jsMenu.addMenuItem(CMD_CONFIG);
 
 });
 
