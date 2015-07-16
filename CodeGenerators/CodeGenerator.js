@@ -114,16 +114,15 @@ define(function (require, exports, module) {
         var s = "";
 
         for(var i = 0; i < op.parameters.length; i++){
-
             if(i !== op.parameters.length - 1){
-
-                s += op.parameters[i].name+", ";
-
+                if(op.parameters[i].direction==="in"){
+                    s += op.parameters[i].name+", ";
+                }
             }else{
-
-                s += op.parameters[i].name;
+                if(op.parameters[i].direction==="in"){
+                    s += op.parameters[i].name;
+                }
             }
-
         }
 
         return s;
