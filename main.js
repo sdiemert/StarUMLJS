@@ -11,8 +11,37 @@ define(function (require, exports, module) {
     var FileSystem          = app.getModule("filesystem/FileSystem");
     var Dialogs             = app.getModule("dialogs/Dialogs");
 
-    var JSGen           = require("JSCodeGenerator");
+    var JSGen               = require("JSCodeGenerator");
     var JavaScriptConfigure = require("JavaScriptConfigure");
+
+    function selectFolder(result, base, path, opts) {
+
+        // If path is not assigned, popup Open Dialog to select a folder
+        if (!path) {
+
+            FileSystem.showOpenDialog(false, true, "Select a folder where generated codes to be located", null, null,
+                function (err, files) {
+                    if (!err) {
+                        if (files.length > 0) {
+                            path = files[0];
+                            JSGen.generate(base, path, opts).then(result.resolve, result.reject);
+                        } else {
+                            result.reject(FileSystem.USER_CANCELED);
+                        }
+                    } else {
+                        result.reject(err);
+                    }
+                }
+            );
+
+        } else {
+
+            JSGen.generate(base, path, opts).then(result.resolve, result.reject);
+
+        }
+
+    }
+
 
     function handleGenerate(base, path, opts) {
 
@@ -29,49 +58,18 @@ define(function (require, exports, module) {
                     if (buttonId === Dialogs.DIALOG_BTN_OK && selected) {
                         base = selected;
 
+                        selectFolder(result, base, path, opts);
 
-                        // If path is not assigned, popup Open Dialog to select a folder
-                        if (!path) {
-
-                            FileSystem.showOpenDialog(false, true, "Select a folder where generated codes to be located", null, null, function (err, files) {
-                                if (!err) {
-                                    if (files.length > 0) {
-                                        path = files[0];
-                                        console.log("path: " + path);
-                                        JSGen.generate(base, path, opts).then(result.resolve, result.reject);
-                                    } else {
-                                        result.reject(FileSystem.USER_CANCELED);
-                                    }
-                                } else {
-                                    result.reject(err);
-                                }
-                            });
-                        } else {
-                            JSGen.generate(base, path, opts).then(result.resolve, result.reject);
-                        }
                     } else {
                         result.reject();
                     }
                 });
         } else {
-            // If path is not assigned, popup Open Dialog to select a folder
-            if (!path) {
-                FileSystem.showOpenDialog(false, true, "Select a folder where generated codes to be located", null, null, function (err, files) {
-                    if (!err) {
-                        if (files.length > 0) {
-                            path = files[0];
-                            JSGen.generate(base, path, opts).then(result.resolve, result.reject);
-                        } else {
-                            result.reject(FileSystem.USER_CANCELED);
-                        }
-                    } else {
-                        result.reject(err);
-                    }
-                });
-            } else {
-                JSGen.generate(base, path, opts).then(result.resolve, result.reject);
-            }
+
+            selectFolder(result, base, path, opts);
+
         }
+
         return result.promise();
 
     }
