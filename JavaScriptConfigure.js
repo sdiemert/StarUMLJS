@@ -33,7 +33,14 @@ define(function (require, exports, module) {
             description: "Number of spaces for indentation.",
             type       : "Number",
             default    : 4
+        },
+        "javascript.gen.generateUnitTests": {
+            text       : "Generate Unit Tests",
+            description: "Generate unit tests using Mocha unit test framework",
+            type       : "Check",
+            default    : false
         }
+
     };
 
     function getId() {
