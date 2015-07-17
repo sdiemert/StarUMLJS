@@ -25,13 +25,13 @@ define(function (require, exports, module) {
 
         if (op.documentation && op.documentation !== "") {
 
-            s += this.getTab() + "* @documentation: " + op.documentation.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*"+this.getTab()+"\n";
+            s += this.getTab() + "* @documentation: " + op.documentation.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*" + this.getTab() + "\n";
 
         }
 
         if (op.specification && op.specification !== "") {
 
-            s += this.getTab() + "* @specification: " + op.specification.replace("\n", "\n"+this.getTab()+"*" + this.getTab()) + "\n"+this.getTab()+"*\n";
+            s += this.getTab() + "* @specification: " + op.specification.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n" + this.getTab() + "*\n";
 
         }
 
@@ -49,27 +49,35 @@ define(function (require, exports, module) {
 
             if (op.postconditions[i] instanceof type.UMLConstraint) {
 
-                s += this.getTab() + "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n"+this.getTab()+"*" + this.getTab()) + "\n";
+                s += this.getTab() + "* @postcondition " + op.postconditions[i].name + " : " + op.postconditions[i].specification.replace("\n", "\n" + this.getTab() + "*" + this.getTab()) + "\n";
 
             }
 
         }
 
-       for (var p = 0; p < op.parameters.length; p++) {
+        for (var p = 0; p < op.parameters.length; p++) {
 
-            switch(op.parameters[p].direction){
-                case "return": 
-                    s += "* @return " 
+            switch (op.parameters[p].direction) {
+                case "return":
+                    s += this.getTab()+"* @return ";
                     break;
 
-                case "in": 
-                    s += "* @param " 
+                case "in":
+                    s += this.getTab()+"* @param ";
                     break;
             }
 
-            s += op.parameters[p].name;  
+            s += op.parameters[p].name;
 
-            s += this.getTab() + "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n+"+this.getTab()+"*" + this.getTab()) + "\n";
+            if(op.parameters[p].type){
+
+                s += " {" + op.parameters[p].type + "} ";
+
+            }else{
+
+                s += " { null } ";
+
+            }
 
             s += op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
 
@@ -201,7 +209,7 @@ define(function (require, exports, module) {
 
             if (elem.attributes[i].visibility === "public") {
 
-                s += this.getTab() + "that." + elem.attributes[i].name + " = " +  val  + ";\n";
+                s += this.getTab() + "that." + elem.attributes[i].name + " = " + val + ";\n";
 
             } else if (elem.attributes[i].visibility === "protected") {
 
@@ -230,15 +238,15 @@ define(function (require, exports, module) {
 
                 //we are assuming that they already have included the required object as a dependancy and named it
                 //correctly.
-                if(elem.ownedElements[i].end1.visibility === "public"){
+                if (elem.ownedElements[i].end1.visibility === "public") {
 
                     s += this.getTab() + "that." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
 
-                }else if(elem.ownedElements[i].end1.visibility === "protected"){
+                } else if (elem.ownedElements[i].end1.visibility === "protected") {
 
                     s += this.getTab() + "proc." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
 
-                }else{
+                } else {
 
                     s += this.getTab() + "var " + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
 
@@ -280,9 +288,9 @@ define(function (require, exports, module) {
 
     };
 
-    FunctionalCodeGenerator.prototype.setOperationVisibility = function(elem){
+    FunctionalCodeGenerator.prototype.setOperationVisibility = function (elem) {
 
-        if(!elem || !elem.operations || !elem.operations.length){
+        if (!elem || !elem.operations || !elem.operations.length) {
 
             return "";
 
@@ -290,17 +298,17 @@ define(function (require, exports, module) {
 
         var s = "";
 
-        for(var i = 0; i < elem.operations.length; i++){
+        for (var i = 0; i < elem.operations.length; i++) {
 
-            if(elem.operations[i].visibility === "public") {
+            if (elem.operations[i].visibility === "public") {
 
-                s += this.getTab()+"that."+elem.operations[i].name +" = "+ elem.operations[i].name+";\n";
+                s += this.getTab() + "that." + elem.operations[i].name + " = " + elem.operations[i].name + ";\n";
 
-            }else if(elem.operations[i].visibility === "protected"){
+            } else if (elem.operations[i].visibility === "protected") {
 
-                s += this.getTab()+"proc."+elem.operations[i].name +" = "+ elem.operations[i].name+";\n";
+                s += this.getTab() + "proc." + elem.operations[i].name + " = " + elem.operations[i].name + ";\n";
 
-            }else{
+            } else {
 
                 //do nothing, they are already private.
 
@@ -309,17 +317,16 @@ define(function (require, exports, module) {
         }
 
 
-
         return s;
 
     };
 
-    FunctionalCodeGenerator.prototype.endClass = function(elem){
+    FunctionalCodeGenerator.prototype.endClass = function (elem) {
 
         var s = "";
 
         //add in the return for the public members
-        s += "\n" + this.getTab()+"return that;\n";
+        s += "\n" + this.getTab() + "return that;\n";
 
         s += "\n}\n\n";
 
