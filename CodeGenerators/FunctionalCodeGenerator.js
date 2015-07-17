@@ -53,13 +53,23 @@ define(function (require, exports, module) {
 
         }
 
-        for (var p = 0; p < op.parameters.length; p++) {
+       for (var p = 0; p < op.parameters.length; p++) {
+            switch(op.parameters[p].direction){
+                case "return": 
+                    s += "* @return " 
+                    break;
 
-            s += this.getTab() + "* @param " + op.parameters[p].name + " {" + op.parameters[p].type + "} " + op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
+                case "in": 
+                    s += "* @param " 
+                    break;
+            }
+            s += op.parameters[p].name;  
+
+            if (op.parameters[p].type) s+= " {" + op.parameters[p].type + "} ";
+
+            s += op.parameters[p].documentation.replace("\n", "\n*" + this.getTab()) + "\n";
 
         }
-
-        s += this.getTab() + "* @return {null}\n";
 
         s += this.getTab() + "*/\n";
 
