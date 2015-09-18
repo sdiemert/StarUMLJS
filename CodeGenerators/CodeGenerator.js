@@ -104,6 +104,19 @@ define(function (require, exports, module) {
         return s;
 
     };
+    /**
+    * Get the name of the file to use to store the class
+    * Sub classes can modify the case and dashing as needed.
+    * @param elem the class to use
+    */
+    CodeGenerator.prototype.getFileName = function(fileName, withExtension){
+        var extension = "";
+        if (withExtension) {
+            extension = ".js";
+        }
+        return fileName + extension;
+    };
+
 
     CodeGenerator.prototype.getOperationParams = function(op){
 

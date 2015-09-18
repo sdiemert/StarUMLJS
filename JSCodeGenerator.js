@@ -6,12 +6,14 @@ define(function (require, exports, module) {
 
     "use strict";
 
-    var fs      = app.getModule("filesystem/FileSystem");
+    var fs = app.getModule("filesystem/FileSystem");
     var fsUtils = app.getModule("file/FileUtils");
-    var async   = app.getModule("utils/Async");
+    var async = app.getModule("utils/Async");
 
     var PrototypeCodeGenerator = require("CodeGenerators/PrototypeCodeGenerator").PrototypeCodeGenerator;
     var FunctionalCodeGenerator = require("CodeGenerators/FunctionalCodeGenerator").FunctionalCodeGenerator;
+    var MongooseCodeGenerator = require("CodeGenerators/MongooseCodeGenerator").MongooseCodeGenerator;
+    var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
 
     /**
      *
@@ -22,9 +24,9 @@ define(function (require, exports, module) {
     function JSCodeGenerator(baseModel, basePath, opts) {
 
         this.baseModel = baseModel;
-        this.basePath  = basePath;
-        this.opts      = opts;
-
+        this.basePath = basePath;
+        this.opts = opts;
+        this.generator = this.getGenerator(opts);
     }
 
     JSCodeGenerator.prototype.generate = function (elem, path, opts) {
@@ -33,9 +35,9 @@ define(function (require, exports, module) {
 
         var self = this;
 
-        var fullPath  = "";
+        var fullPath = "";
         var directory = "";
-        var file      = "";
+        var file = "";
 
         if (elem instanceof type.UMLModel) {
 
@@ -86,7 +88,7 @@ define(function (require, exports, module) {
 
                 //generate the class.
 
-                fullPath = path + "/" + elem.name + ".js";
+                fullPath = path + "/" + self.generator.getFileName(elem.name,true);
 
                 console.log(elem);
 
@@ -107,24 +109,35 @@ define(function (require, exports, module) {
 
     JSCodeGenerator.prototype.generateClassCode = function (elem, opts) {
 
-        //filter on ops up here.
-        var cGen = null;
-
-        if(opts.classType === "functional"){
-
-            cGen = new FunctionalCodeGenerator(opts.indentSpaces);
-
-        }else{
-
-            cGen = new PrototypeCodeGenerator(opts.indentSpaces);
-
-        }
-
-        console.log(cGen);
-
-        return cGen.generate(elem);
+         return this.generator.generate(elem);
 
     };
+    
+    /**
+    * Get the appropriate generator class based on the options set in the configuration
+    * @param options the options
+    * @return the generator 
+    */
+     JSCodeGenerator.prototype.getGenerator = function (options) {
+           var generator = null;
+           switch (options.classType) {
+               case "functional":
+                   generator = new FunctionalCodeGenerator(options.indentSpaces);
+                   break;
+               case "prototype":
+   
+                   generator = new PrototypeCodeGenerator(options.indentSpaces);
+                   break;
+               case "mongoose":
+                   generator = new MongooseCodeGenerator(options);
+                   break;
+                case "ember":
+                  generator = new EmberDSCodeGenerator(options);
+                  break;
+           }
+           console.log(generator);
+           return generator;
+     }; 
 
     exports.generate = function (baseModel, basePath, opts) {
 

@@ -21,11 +21,20 @@ define(function (require, exports, module) {
          default: true
          },
          */
+         "javascript.gen.copyright": {
+                     text       : "Copyright Text",
+                     description: "Copyright Text to use on all files",
+                     type       : "String",
+                     default    : "\n/*\n*(C) Copyright MyCompany, Inc. \n*All rights reserved\n*/\n"
+                 },
         "javascript.gen.classType"   : {
             text       : "Class Generation Pattern",
             description: "Pattern to use for class generation.",
             type       : "Dropdown",
-            options    : [{value: "prototype", text: "prototype"}, {value: "functional", text: "functional"}],
+            options    : [{value: "prototype", text: "prototype"},
+                {value: "functional", text: "functional"},
+                {value: "mongoose", text: "mongoose"},
+                {value: "ember", text: "ember"}],
             default    : {value: "prototye", text: "prototype"}
         },
         "javascript.gen.indentSpaces": {
@@ -50,7 +59,8 @@ define(function (require, exports, module) {
     function getGenOptions() {
         return {
             indentSpaces: PreferenceManager.get("javascript.gen.indentSpaces"),
-            classType   : PreferenceManager.get("javascript.gen.classType")
+            classType   : PreferenceManager.get("javascript.gen.classType"),
+            copyright :  PreferenceManager.get("javascript.gen.copyright")
         };
     }
 
