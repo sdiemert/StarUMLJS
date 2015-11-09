@@ -112,11 +112,11 @@ define(function (require, exports, module) {
          return this.generator.generate(elem);
 
     };
-    
+
     /**
     * Get the appropriate generator class based on the options set in the configuration
     * @param options the options
-    * @return the generator 
+    * @return the generator
     */
      JSCodeGenerator.prototype.getGenerator = function (options) {
            var generator = null;
@@ -125,7 +125,7 @@ define(function (require, exports, module) {
                    generator = new FunctionalCodeGenerator(options.indentSpaces);
                    break;
                case "prototype":
-   
+
                    generator = new PrototypeCodeGenerator(options.indentSpaces);
                    break;
                case "mongoose":
@@ -134,10 +134,13 @@ define(function (require, exports, module) {
                 case "ember":
                   generator = new EmberDSCodeGenerator(options);
                   break;
+				case "ES2015":
+                    generator = new ES2015CodeGenerator(options);
+                    break;
            }
            console.log(generator);
            return generator;
-     }; 
+     };
 
     exports.generate = function (baseModel, basePath, opts) {
 
