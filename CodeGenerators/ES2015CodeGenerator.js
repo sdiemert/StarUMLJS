@@ -15,7 +15,7 @@ define(function (require, exports, module) {
     ES2015CodeGenerator.prototype = new CodeGenerator();
 
 	ES2015CodeGenerator.prototype.matchDocPattern = function(node){
-		return(node.replace("\n", "\n*" + this.getTab()) + "\n*\n";)
+		return(node.replace("\n", "\n*" + this.getTab()) + "\n*\n");
 	}
 
     ES2015CodeGenerator.prototype.getMethodDocumentation = function (op) {
