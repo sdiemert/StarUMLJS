@@ -13,7 +13,8 @@ define(function (require, exports, module) {
     var PrototypeCodeGenerator = require("CodeGenerators/PrototypeCodeGenerator").PrototypeCodeGenerator;
     var FunctionalCodeGenerator = require("CodeGenerators/FunctionalCodeGenerator").FunctionalCodeGenerator;
     var MongooseCodeGenerator = require("CodeGenerators/MongooseCodeGenerator").MongooseCodeGenerator;
-    var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
+	var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
+    var ES2015DSCodeGenerator = require("CodeGenerators/ES2015DSCodeGenerator").ES2015DSCodeGenerator;
 
     /**
      *
@@ -134,7 +135,7 @@ define(function (require, exports, module) {
                 case "ember":
                   generator = new EmberDSCodeGenerator(options);
                   break;
-				case "ES2015":
+				case "es2015":
                     generator = new ES2015CodeGenerator(options);
                     break;
            }
