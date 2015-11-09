@@ -2,13 +2,13 @@
   "name": "sdiemert.starumljs",
   "title": "StarUMLJS",
   "description": "JavaScript Code Generation Plugin",
-  "homepage": "https://github.com/sdiemert/StarUMLJS",
+  "homepage": "https://github.com/cotlod/StarUMLJS",
   "version": "0.1.0",
   "keywords": ["javascript", "staruml", "js", "UML"],
   "author": {
     "name": "Simon Diemert",
     "email": "simon.diemert@gmail.com",
-    "url": "https://github.com/sdiemert"
+    "url": "https://github.com/cotlod"
   },
   "license": "MIT",
   "engines": {
