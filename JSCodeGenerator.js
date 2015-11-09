@@ -14,7 +14,7 @@ define(function (require, exports, module) {
     var FunctionalCodeGenerator = require("CodeGenerators/FunctionalCodeGenerator").FunctionalCodeGenerator;
     var MongooseCodeGenerator = require("CodeGenerators/MongooseCodeGenerator").MongooseCodeGenerator;
 	var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
-    var ES2015DSCodeGenerator = require("CodeGenerators/ES2015DSCodeGenerator").ES2015DSCodeGenerator;
+    var ES2015CodeGenerator = require("CodeGenerators/ES2015CodeGenerator").ES2015CodeGenerator;
 
     /**
      *
