@@ -34,7 +34,7 @@ define(function (require, exports, module) {
             options    : [{value: "prototype", text: "prototype"},
                 {value: "functional", text: "functional"},
                 {value: "mongoose", text: "mongoose"},
-				{value: "ember", text: "ember"}],
+				{value: "ember", text: "ember"},
                 {value: "es2015", text: "es2015"}],
             default    : {value: "es2015", text: "es2015"}
         },
