@@ -219,6 +219,7 @@ define(function (require, exports, module) {
             case "String":
             case "Date":
             case "Number":
+            case "Boolean":
                 attributeClass = prefix + "attr('" + attributeClass.toLowerCase() + "')";
                 break;
             case "[object Object]":
