@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 sandbox/
+local/
 
 # IntelliJ project files
 .idea

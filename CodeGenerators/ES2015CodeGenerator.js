@@ -26,9 +26,11 @@ define(function (require, exports, module) {
 
         if (op.documentation && op.documentation !== "") {
             s += "* @documentation: " + this.matchDocPattern(op.documentation);
+        }
 
-        if (op.specification && op.specification !== "")
+        if (op.specification && op.specification !== "") {
             s += "* @specification: " + this.matchDocPattern(op.specification);
+        }
 
 		var preconditionsLength = op.preconditions.length;
 
@@ -153,7 +155,7 @@ define(function (require, exports, module) {
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getClassDefinition = function (elem) {
+    ES2015CodeGenerator.prototype.getClassDefinition = function (elem) {
 
         var s = "";
 
