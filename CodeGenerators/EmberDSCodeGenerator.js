@@ -219,6 +219,7 @@ define(function (require, exports, module) {
             case "String":
             case "Date":
             case "Number":
+            case "Boolean":
                 attributeClass = prefix + "attr('" + attributeClass.toLowerCase() + "')";
                 break;
             case "[object Object]":
@@ -227,7 +228,11 @@ define(function (require, exports, module) {
                 } else {
                     prefix += "belongsTo(";
                 }
-                attributeClass = prefix + "'" + this.getFileName(attributeClass.name) + "',{async:true})";
+                if (!attribute.isLeaf) {
+                    attributeClass = prefix + "'" + this.getFileName(attributeClass.name) + "',{async:true})";
+                } else {
+                    attributeClass = prefix + "'" + this.getFileName(attributeClass.name) + "')";
+                }
                 break;
             default:
                 attributeClass = "undefined";
