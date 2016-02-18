@@ -3,7 +3,7 @@
   "title": "StarUMLJS",
   "description": "JavaScript Code Generation Plugin",
   "homepage": "https://github.com/sdiemert/StarUMLJS",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": ["javascript", "staruml", "js", "UML"],
   "author": {
     "name": "Simon Diemert",

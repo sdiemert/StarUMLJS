@@ -13,7 +13,8 @@ define(function (require, exports, module) {
     var PrototypeCodeGenerator = require("CodeGenerators/PrototypeCodeGenerator").PrototypeCodeGenerator;
     var FunctionalCodeGenerator = require("CodeGenerators/FunctionalCodeGenerator").FunctionalCodeGenerator;
     var MongooseCodeGenerator = require("CodeGenerators/MongooseCodeGenerator").MongooseCodeGenerator;
-    var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
+	var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
+    var ES2015CodeGenerator = require("CodeGenerators/ES2015CodeGenerator").ES2015CodeGenerator;
 
     /**
      *
@@ -112,11 +113,11 @@ define(function (require, exports, module) {
          return this.generator.generate(elem);
 
     };
-    
+
     /**
     * Get the appropriate generator class based on the options set in the configuration
     * @param options the options
-    * @return the generator 
+    * @return the generator
     */
      JSCodeGenerator.prototype.getGenerator = function (options) {
            var generator = null;
@@ -125,7 +126,7 @@ define(function (require, exports, module) {
                    generator = new FunctionalCodeGenerator(options.indentSpaces);
                    break;
                case "prototype":
-   
+
                    generator = new PrototypeCodeGenerator(options.indentSpaces);
                    break;
                case "mongoose":
@@ -134,10 +135,13 @@ define(function (require, exports, module) {
                 case "ember":
                   generator = new EmberDSCodeGenerator(options);
                   break;
+				case "es2015":
+                    generator = new ES2015CodeGenerator(options);
+                    break;
            }
            console.log(generator);
            return generator;
-     }; 
+     };
 
     exports.generate = function (baseModel, basePath, opts) {
 
