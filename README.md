@@ -14,7 +14,7 @@ Note, installing from GitHub will give whatever is at the HEAD of the master bra
 
 * Open the StarUML extension manager (Tools -> Extension Manager).
 * In the bottom left corner of the pop window select "Install from URL"
-* Enter the following URL: [https://github.com/cotlod/StarUMLJS](https://github.com/cotlod/StarUMLJS)
+* Enter the following URL: [https://github.com/sdiemert/StarUMLJS](https://github.com/sdiemert/StarUMLJS)
 * You may have to reload StarUML or just restart to the application.
 
 ## Current Status
