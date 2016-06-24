@@ -35,7 +35,8 @@ define(function (require, exports, module) {
                 {value: "functional", text: "functional"},
                 {value: "mongoose", text: "mongoose"},
 				{value: "ember", text: "ember"},
-                {value: "es2015", text: "es2015"}],
+                {value: "es2015", text: "es2015"},
+                {value: "riot", text: "riot"}],
             default    : {value: "es2015", text: "es2015"}
         },
         "javascript.gen.indentSpaces": {

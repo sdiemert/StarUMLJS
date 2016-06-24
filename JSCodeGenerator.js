@@ -15,6 +15,7 @@ define(function (require, exports, module) {
     var MongooseCodeGenerator = require("CodeGenerators/MongooseCodeGenerator").MongooseCodeGenerator;
 	var EmberDSCodeGenerator = require("CodeGenerators/EmberDSCodeGenerator").EmberDSCodeGenerator;
     var ES2015CodeGenerator = require("CodeGenerators/ES2015CodeGenerator").ES2015CodeGenerator;
+    var RiotTagCodeGenerator = require("CodeGenerators/RiotTagCodeGenerator").RiotTagCodeGenerator;
 
     /**
      *
@@ -138,6 +139,10 @@ define(function (require, exports, module) {
 				case "es2015":
                     generator = new ES2015CodeGenerator(options);
                     break;
+                case "riot":
+                    generator = new RiotTagCodeGenerator(options);
+                    break;
+
            }
            console.log(generator);
            return generator;
