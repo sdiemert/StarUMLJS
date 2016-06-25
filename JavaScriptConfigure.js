@@ -45,6 +45,12 @@ define(function (require, exports, module) {
             type       : "Number",
             default    : 4
         },
+        "javascript.gen.comments": {
+            text       : "Generate comments",
+            description: "Generate comments in JSDoc style.",
+            type       : "Check",
+            default    : false
+        },
         "javascript.gen.generateUnitTests": {
             text       : "Generate Unit Tests",
             description: "Generate unit tests using Mocha unit test framework",

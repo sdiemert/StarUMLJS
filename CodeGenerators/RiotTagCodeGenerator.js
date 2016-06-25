@@ -9,6 +9,8 @@ define(function (require, exports, module) {
 	function RiotTagCodeGenerator(options) {
 
 		this.tabSize = options.indentSpaces || 4;
+		console.log(options)
+		this.comments = options.comments;
 
 	}
 
@@ -23,44 +25,31 @@ define(function (require, exports, module) {
 	};
 
   RiotTagCodeGenerator.prototype.matchDocPattern = function(node){
-	return(node.replace("\n", "\n*" + this.getTab()) + "\n" + this.getTab() + " *\n");
+	return(node.replace("\n", "\n*" + this.getTab()) + "\n");
   }
 
 	RiotTagCodeGenerator.prototype.getMethodDocumentation = function (op) {
 
-		var s = "";
+		console.log(this.comments)
 
-		s += "\n" + this.getTab() + "/**\n";
+		if (!this.comments)
+			return ""
 
-		if (op.documentation && op.documentation !== "") {
-			s += this.getTab() + " * @documentation: " + this.matchDocPattern(op.documentation);
-		}
+		console.log('ahoj')
 
-		if (op.specification && op.specification !== "") {
-			s += this.getTab() + " * @specification: " + this.matchDocPattern(op.specification);
-		}
+		var s = ""
 
-	var preconditionsLength = op.preconditions.length;
+		s += "\n" + this.getTab() + "/**\n"
 
-		for (var i = 0; i < preconditionsLength; i++) {
+		s += this.getTab() + " * @method " + op.name + "\n"
 
-	  var precondition = op.preconditions[i];
+		if (op.documentation && op.documentation !== "")
+			s += this.getTab() + " * @documentation: " + this.matchDocPattern(op.documentation)
 
-			if (precondition instanceof type.UMLConstraint)
-				s += this.getTab() + " * @precondition " + precondition.name + " : " + this.matchDocPattern(precondition.specification);
-		}
+		if (op.specification && op.specification !== "")
+			s += this.getTab() + " * @specification: " + this.matchDocPattern(op.specification)
 
-	var postconditionsLength = op.postconditions.length;
-
-		for (i = 0; i < postconditionsLength; i++) {
-
-	  var postcondition = op.postconditions[i];
-
-			if (postcondition instanceof type.UMLConstraint)
-				s += this.getTab() + " * @postcondition " + postcondition.name + " : " + this.matchDocPattern(postcondition.specification);
-		}
-
-	s += this.getDocumentationParameters(op);
+		s += this.getDocumentationParameters(op);
 		s += this.getTab() + " */\n";
 
 		return s;
@@ -74,24 +63,25 @@ define(function (require, exports, module) {
 
 	for (var p = 0; p < parametersLength; p++) {
 
-	  var parameter = op.parameters[p];
+	  	var parameter = op.parameters[p];
 
-			switch(parameter.direction){
-				case "return":
-					parametersString += this.getTab() + " * @return ";
-					break;
+		switch(parameter.direction){
+			case "return":
+				parametersString += this.getTab() + " * @return ";
+				break;
 
-				case "in":
-					parametersString += this.getTab() + " * @param ";
-					break;
-			}
-
-			parametersString += parameter.name;
-
-			if (parameter.type) parametersString += " {" + parameter.type + "} ";
-
-			parametersString += this.matchDocPattern(parameter.documentation);
+			case "in":
+				parametersString += this.getTab() + " * @param ";
+				break;
 		}
+
+		parametersString += parameter.name;
+
+		if (parameter.type)
+			parametersString += " {" + parameter.type.toString() + "} "
+
+		parametersString += this.matchDocPattern(parameter.documentation)
+	}
 
 	return parametersString;
   };
@@ -165,26 +155,44 @@ define(function (require, exports, module) {
 
 	RiotTagCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
 
-		var s = "";
-
 		var s = ""
 
 		if (!elem || !elem.attributes || !elem.attributes.length)
 			return s
 
+
 		var tags = elem.ownedElements
 
 		tags.forEach(function(tag) {
+			
 			if (this.validUMLAssociation(tag))
 				s += this.getTab() + "<" + tag.end1.name + "/>\n"
+
 		}, this)
 
-		var attributesLength = elem.attributes.length;
 
-		for (var i = 0; i < attributesLength; i++) {
+		var attrs = elem.attributes
 
-			s += this.getTab() + "this." + elem.attributes[i].name + " = null;\n";
-		}
+		attrs.forEach(function(attr) {
+
+			if (this.comments && (attr.documentation || attr.type)) {
+				s += "\n" + this.getTab() + "/**\n"
+
+				if (attr.documentation)
+					s += this.getTab() + " * " + attr.documentation + "\n"
+
+				if (attr.type)
+					s += this.getTab() + " * @type {" + attr.type.toString() + "}\n"
+
+				s += this.getTab() + " */\n"
+			}
+
+			s += this.getTab() + "this." + attr.name + " = "
+			s += (attr.defaultValue ? attr.defaultValue : 'null') + "\n"
+
+		}, this)
+
+		s += "\n"
 
 		return s;
 
@@ -216,6 +224,26 @@ define(function (require, exports, module) {
 	};
 
 
+    RiotTagCodeGenerator.prototype.getHeader = function (elem) {
+
+    	if (!this.comments) return "";
+
+        var now = new Date();
+        var s = "";
+
+        s += "/**\n";
+        s += " * Generated On: "+ now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()+"\n";
+        s += " * Tag: " + elem.name+"\n";
+
+        if(elem.documentation && elem.documentation !== "")
+            s += " * Description: "+elem.documentation.replace("\n", "\n* ")+"\n";
+
+        s += " */\n\n";
+
+        return s;
+
+    };
+
 	RiotTagCodeGenerator.prototype.getClassDefinition = function (elem) {
 
 		var s = "";
@@ -240,6 +268,8 @@ define(function (require, exports, module) {
 
 		var s = "";
 
+		s += this.getHeader(elem);
+		
 		s += this.getClassDefinition(elem);
 
 		return s;
