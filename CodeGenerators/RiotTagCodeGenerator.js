@@ -1,5 +1,5 @@
 /**
- * Created by cotlod on 15-11-09.
+ * Created by PanJarda on 06-25-2016.
  */
 
 define(function (require, exports, module) {
@@ -167,22 +167,17 @@ define(function (require, exports, module) {
 
 		var s = "";
 
-		if (!elem || !elem.attributes || !elem.attributes.length) {
+		var s = ""
 
-			return s;
-		}
+		if (!elem || !elem.attributes || !elem.attributes.length)
+			return s
 
-		var ownedElementsLength = elem.ownedElements.length;
+		var tags = elem.ownedElements
 
-		for (var i = 0; i < ownedElementsLength; i++) {
-
-		  var ownedElement = elem.ownedElements[i];
-
-			if (this.validUMLAssociation(ownedElement)){
-				s += this.getTab() + "<" + ownedElement.end1.name + "/>\n";
-			}
-
-		}
+		tags.forEach(function(tag) {
+			if (this.validUMLAssociation(tag))
+				s += this.getTab() + "<" + tag.end1.name + "/>\n"
+		}, this)
 
 		var attributesLength = elem.attributes.length;
 
