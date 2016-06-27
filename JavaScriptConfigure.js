@@ -35,7 +35,8 @@ define(function (require, exports, module) {
                 {value: "functional", text: "functional"},
                 {value: "mongoose", text: "mongoose"},
 				{value: "ember", text: "ember"},
-                {value: "es2015", text: "es2015"}],
+                {value: "es2015", text: "es2015"},
+                {value: "riot", text: "riot"}],
             default    : {value: "es2015", text: "es2015"}
         },
         "javascript.gen.indentSpaces": {
@@ -43,6 +44,12 @@ define(function (require, exports, module) {
             description: "Number of spaces for indentation.",
             type       : "Number",
             default    : 4
+        },
+        "javascript.gen.comments": {
+            text       : "Generate comments",
+            description: "Generate comments in JSDoc style.",
+            type       : "Check",
+            default    : false
         },
         "javascript.gen.generateUnitTests": {
             text       : "Generate Unit Tests",
