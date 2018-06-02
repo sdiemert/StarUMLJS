@@ -9,6 +9,5 @@ local/
 out
 gen
 
-
 test/testModel1Output
 copyFiles.sh
