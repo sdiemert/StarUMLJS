@@ -6,15 +6,15 @@ define(function (require, exports, module) {
 
     var CodeGenerator = require("CodeGenerators/CodeGenerator").CodeGenerator;
 
-    function PrototypeCodeGenerator(spacesPerTab) {
+    function TypeScriptCodeGenerator(spacesPerTab) {
 
         this.tabSize = spacesPerTab || 4;
 
     }
 
-    PrototypeCodeGenerator.prototype = new CodeGenerator();
+    TypeScriptCodeGenerator.prototype = new CodeGenerator();
 
-    PrototypeCodeGenerator.prototype.getMethodDocumentation = function (op) {
+    TypeScriptCodeGenerator.prototype.getMethodDocumentation = function (op) {
 
         var s = "";
 
@@ -55,11 +55,11 @@ define(function (require, exports, module) {
         for (var p = 0; p < op.parameters.length; p++) {
             switch(op.parameters[p].direction){
                 case "return": 
-                    s += "* @return " 
+                    s += "* @return ";
                     break;
 
                 case "in": 
-                    s += "* @param " 
+                    s += "* @param ";
                     break;
             }
             s += op.parameters[p].name;  
@@ -75,7 +75,7 @@ define(function (require, exports, module) {
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getDependancies = function (elem) {
+    TypeScriptCodeGenerator.prototype.getDependancies = function (elem) {
 
         if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
 
@@ -124,7 +124,7 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.getOperation = function (elem, op) {
+    TypeScriptCodeGenerator.prototype.getOperation = function (elem, op) {
 
         var s = "";
 
@@ -136,36 +136,30 @@ define(function (require, exports, module) {
         s += this.getOperationParams(op);
 
         //end function
-        if (elem.isAbstract) {
 
+        s += "){\n" + this.getTab() + "//TODO: Implement Me \n\n};\n\n";
 
-            s += "){\n" + this.getTab() + "throw 'AbstractMethodNotImplementedError';\n\n};\n\n";
-
-        } else {
-
-            s += "){\n" + this.getTab() + "//TODO: Implement Me \n\n};\n\n";
-
-        }
 
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getClassDefinition = function (elem) {
+    TypeScriptCodeGenerator.prototype.getClassDefinition = function (elem) {
 
         var s = "";
 
-        s += "function " + elem.name + "(){\n";
-        s += this.getTab();
-        s += "//Constructor\n\n";
+        s += "export class " + elem.name +this.getInheritance(elem)+"{\n";
 
         s += this.getAttributeDefinitions(elem);
 
+        s += this.getTab();
+        s += "//Constructor\n";
+        s += "public constructor(){ \n // default blank constructor... \n \n };\n\n";
         s += "\n}\n\n";
 
         return s;
     };
 
-    PrototypeCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
+    TypeScriptCodeGenerator.prototype.getAttributeDefinitions = function (elem) {
 
         var s = "";
 
@@ -176,7 +170,19 @@ define(function (require, exports, module) {
 
         for (var i = 0; i < elem.attributes.length; i++) {
 
-            s += this.getTab() + "this." + elem.attributes[i].name + " = null;\n";
+            if (elem.attributes[i].visibility === "public") {
+
+                s += this.getTab() + "public " + elem.attributes[i].name + " : "+elem.attributes[i].type+" = " + val + ";\n";
+
+            } else if (elem.attributes[i].visibility === "protected") {
+
+                s += this.getTab() + "protected " + elem.attributes[i].name + " : "+elem.attributes[i].type+ " = " + val + ";\n";
+
+            } else {
+
+                s += this.getTab() + "private " + elem.attributes[i].name + " : "+elem.attributes[i].type+ " = " + val + ";\n";
+
+            }
 
         }
 
@@ -194,7 +200,19 @@ define(function (require, exports, module) {
 
                 //we are assuming that they already have included the required object as a dependancy and named it
                 //correctly.
-                s += this.getTab() + "this." + elem.ownedElements[i].end1.name + " = " + elem.ownedElements[i].end1.name + ";\n";
+                if (elem.attributes[i].visibility === "public") {
+
+                    s += this.getTab() + "public " + elem.attributes[i].name + " : "+elem.attributes[i].type+" = " + val + ";\n";
+
+                } else if (elem.attributes[i].visibility === "protected") {
+
+                    s += this.getTab() + "protected " + elem.attributes[i].name + " : "+elem.attributes[i].type+ " = " + val + ";\n";
+
+                } else {
+
+                    s += this.getTab() + "private " + elem.attributes[i].name + " : "+elem.attributes[i].type+ " = " + val + ";\n";
+
+                }
 
             }
 
@@ -204,7 +222,7 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.getInheritance = function (elem) {
+    TypeScriptCodeGenerator.prototype.getInheritance = function (elem) {
 
         if (!elem || !elem.ownedElements || !elem.ownedElements.length) {
 
@@ -219,7 +237,10 @@ define(function (require, exports, module) {
 
                 if (elem.ownedElements[i].target instanceof type.UMLClass) {
 
-                    s += elem.name + ".prototype = new " + elem.ownedElements[i].target.name + "();\n";
+                    s += " extends " + elem.ownedElements[i].target.name;
+
+                    // return here to prevent multiple inheritance.
+                    return s;
 
                 }
 
@@ -231,7 +252,7 @@ define(function (require, exports, module) {
 
     };
 
-    PrototypeCodeGenerator.prototype.generate = function (elem) {
+    TypeScriptCodeGenerator.prototype.generate = function (elem) {
 
         var s = "";
 
@@ -244,18 +265,12 @@ define(function (require, exports, module) {
         //object definition, includes attributes
         s += this.getClassDefinition(elem);
 
-        //get inheritance if it exists.
-        s += this.getInheritance(elem);
-
         //functions
         s += this.getOperations(elem);
-
-        // exports at end of file.
-        s += this.getExports(elem);
 
         return s;
     };
 
-    exports.PrototypeCodeGenerator = PrototypeCodeGenerator;
+    exports.TypeScriptCodeGenerator = TypeScriptCodeGenerator;
 });
 
