@@ -4,7 +4,12 @@
   "description": "JavaScript Code Generation Plugin",
   "homepage": "https://github.com/sdiemert/StarUMLJS",
   "version": "0.1.1",
-  "keywords": ["javascript", "staruml", "js", "UML"],
+  "keywords": [
+    "javascript",
+    "staruml",
+    "js",
+    "UML"
+  ],
   "author": {
     "name": "Simon Diemert",
     "email": "simon.diemert@gmail.com",
@@ -13,5 +18,12 @@
   "license": "MIT",
   "engines": {
     "staruml": ">=2.0.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.2",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-nodeunit": "^2.0.0",
+    "grunt-mocha-test": "^0.13.3",
+    "mocha": "^5.2.0"
   }
 }

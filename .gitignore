@@ -2,6 +2,7 @@
 
 sandbox/
 local/
+node_modules/
 
 # IntelliJ project files
 .idea
